@@ -1,13 +1,5 @@
 import { Brain, Users, Star } from 'lucide-react';
 
-// Add GitHub's Mona Sans and Hubot Sans fonts
-const fontLink = document.createElement('link');
-fontLink.href = 'https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Hubot+Sans:ital,wght@0,200..900;1,200..900&display=swap';
-fontLink.rel = 'stylesheet';
-if (!document.head.querySelector(`link[href="${fontLink.href}"]`)) {
-  document.head.appendChild(fontLink);
-}
-
 export const Footer: React.FC = () => {
   return (
     <footer className="px-6 py-8 border-t border-white/10 bg-black/20">

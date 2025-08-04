@@ -1,14 +1,17 @@
-import { Brain } from 'lucide-react';
-
-// Add GitHub's Mona Sans and Hubot Sans fonts
-const fontLink = document.createElement('link');
-fontLink.href = 'https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=Hubot+Sans:ital,wght@0,200..900;1,200..900&display=swap';
-fontLink.rel = 'stylesheet';
-if (!document.head.querySelector(`link[href="${fontLink.href}"]`)) {
-  document.head.appendChild(fontLink);
-}
+import { Brain, Menu, X } from 'lucide-react';
+import { useState } from 'react';
 
 export const Navigation: React.FC = () => {
+    
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
+  const menuItems = [
+    { name: 'Features', href: '#features' },
+    { name: 'How It Works', href: '#how-it-works' },
+    { name: 'Testimonials', href: '#testimonials' },
+    { name: 'Contact', href: '#contact' }
+  ];
+
   return (
     <nav className="relative z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -18,26 +21,51 @@ export const Navigation: React.FC = () => {
             StudyAssist
           </span>
         </div>
-        <div className="hidden md:flex space-x-8">
-          <a href="#features" className="text-gray-300 hover:text-white transition-colors">
-            Features
-          </a>
-          <a href="#how-it-works" className="text-gray-300 hover:text-white transition-colors">
-            How It Works
-          </a>
-          <a href="#testimonials" className="text-gray-300 hover:text-white transition-colors">
-            Reviews
-          </a>
-          <a href="/dashboard" className="text-gray-300 hover:text-white transition-colors">
-            Dashboard
-          </a>
+        
+        {/* Desktop menu*/}
+        <div className="hidden md:flex items-center space-x-8">
+            {menuItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                {item.name}
+              </a>
+            ))}
         </div>
+        
         {/* Mobile menu button */}
-        <button className="md:hidden text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+        <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
         </button>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-gray-900/95 backdrop-blur-lg border-b border-white/10 z-50">
+            <div className="px-6 py-4 space-y-4">
+              {menuItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="block text-gray-300 hover:text-white transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+        
       </div>
     </nav>
   );
