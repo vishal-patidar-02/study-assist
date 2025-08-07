@@ -17,26 +17,27 @@ export const HeroSection: React.FC = () => {
     setVisualMap('');
     setIsGeneratingVisual(true);
 
-    try {
-      // Replace with your actual backend endpoint
-      const res = await fetch('/api/chat', {
-        method: 'POST',
+    try { 
+      const res = await fetch("/api/studyAssist", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt }),
       });
+      
 
       if (!res.ok) throw new Error('Failed to get response');
       
       const data = await res.json();
-      setResponse(data.response);
+      setResponse(data.explanation);
 
-      // Simulate visual map generation delay
+      // Simulate visual map generation delay      
       setTimeout(() => {
-        setVisualMap(`https://api.studyassist.ai/generate-visual-map?topic=${encodeURIComponent(prompt)}&style=conceptual`);
+        setVisualMap(data.image);
         setIsGeneratingVisual(false);
       }, 2000);
+
 
     } catch (error) {
       console.error('Error:', error);
