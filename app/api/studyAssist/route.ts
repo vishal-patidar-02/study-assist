@@ -1,55 +1,52 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { CohereClientV2 } from "cohere-ai";
 
-const gemini = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const cohere = new CohereClientV2({
+  token: process.env.COHERE_API_KEY as string,
+});
 
 export async function POST(req: NextRequest) {
-  const { prompt } = await req.json();
+  const { prompt }: { prompt: string } = await req.json();
+  console.log("User Prompt:", prompt);
 
   try {
-    const model = gemini.getGenerativeModel({ model: "gemini-pro" });
+    // Step 1: Ask Cohere for explanation + visual prompt
+    const chatResponse: any = await cohere.chat({
+      model: "command-a-03-2025",
+      messages: [
+        {
+          role: "user",
+          content: `Explain the topic "${prompt}" in a simple, student-friendly way.
+          
+          After the explanation, write exactly: "Visual Prompt:" followed by a short, clear description of a diagram that represents the concept.
+          
+          The diagram should be described in plain language, like:
+          - "A mind map showing main idea in the center and 3-4 branches with key points"
+          - "A flowchart with arrows showing steps in the process"
+          - "A simple labeled diagram highlighting the main parts"
+          
+          Keep the visual prompt concise and directly usable for generating an image.`
+        },
+      ]
 
-    // Step 1: Ask Gemini for explanation and image prompt
-    const result = await model.generateContent([
-      {
-        text: `Explain the topic "${prompt}" in a simple, student-friendly way. Also, generate a separate visual prompt (like a flowchart or mind map) for rendering an AI-based diagram.`,
-      },
-    ]);
+    });
 
-    const geminiResponse = await result.response;
-    const fullText = geminiResponse.text();
+    const fullText: string = (chatResponse.message?.content?.[0]?.text || "").trim();
+    console.log("Cohere Output:", fullText);
 
     // Step 2: Split explanation and image prompt
     const [explanation, imagePrompt] = fullText.split("Visual Prompt:");
 
     if (!imagePrompt) {
-      return NextResponse.json({ error: "Could not extract visual prompt." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Could not extract visual prompt." },
+        { status: 400 }
+      );
     }
-
-    // Step 3: Send image prompt to Stability AI
-    const stabilityResponse = await fetch("https://api.stability.ai/v2beta/stable-image/generate/core", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.STABILITY_API_KEY}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        prompt: imagePrompt.trim(),
-        output_format: "png",
-      }),
-    });
-
-    if (!stabilityResponse.ok) {
-      const errText = await stabilityResponse.text();
-      throw new Error("Stability AI Error: " + errText);
-    }
-
-    const imageData = await stabilityResponse.json();
 
     return NextResponse.json({
       explanation: explanation.trim(),
-      image: `data:image/png;base64,${imageData.image}`,
+      visualPrompt: imagePrompt.trim(),
     });
   } catch (error) {
     console.error("StudyAssist Error:", error);
