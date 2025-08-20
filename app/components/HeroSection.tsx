@@ -25,16 +25,23 @@ export const HeroSection: React.FC = () => {
         },
         body: JSON.stringify({ prompt }),
       });
+      const { explanation, visualPrompt } = await res.json();
+      setResponse(explanation);
       
+      // Step 2: Get image from Stability AI
+      const imgRes = await fetch("/api/imageGenerate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visualPrompt }),
+      });
+      const { image } = await imgRes.json();
+      console.log(image);
 
       if (!res.ok) throw new Error('Failed to get response');
-      
-      const data = await res.json();
-      setResponse(data.explanation);
 
       // Simulate visual map generation delay      
       setTimeout(() => {
-        setVisualMap(data.image);
+        setVisualMap(image);
         setIsGeneratingVisual(false);
       }, 2000);
 
@@ -181,15 +188,9 @@ export const HeroSection: React.FC = () => {
                       <div className="space-y-3 sm:space-y-4">
                         <div className="bg-white/10 rounded-lg p-3 sm:p-4 border border-white/20">
                           <img
-                            src={visualMap}
+                            src={visualMap}   // ✅ now it’s a direct Pollinations URL
                             alt={`Visual mind map for: ${prompt}`}
                             className="w-full h-auto rounded-lg shadow-lg"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const placeholder = target.nextElementSibling as HTMLElement;
-                              if (placeholder) placeholder.style.display = 'flex';
-                            }}
                           />
                           {/* Fallback placeholder */}
                           <div className="hidden w-full h-48 sm:h-64 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg items-center justify-center flex-col space-y-3 sm:space-y-4 border-2 border-dashed border-white/30">
