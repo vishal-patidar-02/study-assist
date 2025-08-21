@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CohereClientV2 } from "cohere-ai";
 
 const cohere = new CohereClientV2({
-  token: process.env.COHERE_API_KEY as string,
+  token: process.env.CO_API_KEY as string,
 });
 
 export async function POST(req: NextRequest) {
