@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Step 1: Ask Cohere for explanation + visual prompt
-    const chatResponse: any = await cohere.chat({
+    const chatResponse = await cohere.chat({
       model: "command-a-03-2025",
       messages: [
         {
@@ -31,7 +31,11 @@ export async function POST(req: NextRequest) {
 
     });
 
-    const fullText: string = (chatResponse.message?.content?.[0]?.text || "").trim();
+    // Extract the text from the content array, filtering for items with a 'text' property
+    const fullText: string = (chatResponse.message?.content
+      ?.map(item => 'text' in item ? (item as { text: string }).text : '')
+      .join(' ')
+      .trim() || "");
     console.log("Cohere Output:", fullText);
 
     // Step 2: Split explanation and image prompt

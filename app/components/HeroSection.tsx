@@ -198,7 +198,7 @@ export const HeroSection: React.FC = () => {
                             <div className="text-center text-white/80 px-4">
                               <p className="font-semibold text-sm sm:text-base">Visual Mind Map</p>
                               <p className="text-xs sm:text-sm text-white/60">AI-generated concept visualization for:</p>
-                              <p className="text-xs sm:text-sm font-medium">"{prompt}"</p>
+                              <p className="text-xs sm:text-sm font-medium">{prompt}</p>
                             </div>
                           </div>
                         </div>
@@ -299,7 +299,7 @@ export const HeroSection: React.FC = () => {
                     <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-300 mb-4 text-sm sm:text-base">"{testimonial.text}"</p>
+                <p className="text-gray-300 mb-4 text-sm sm:text-base">{testimonial.text}</p>
                 <div>
                   <div className="font-semibold text-white text-sm sm:text-base">{testimonial.name}</div>
                   <div className="text-xs sm:text-sm text-gray-400">{testimonial.subject}</div>
